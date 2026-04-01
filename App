@@ -1,0 +1,52 @@
+import Database
+
+MENU_PROMPT = """ COFFEE BEAN APP
+
+Please choose one of these options:
+1. Add new beans
+2. See all beans
+3. find beans by name
+4. See which preperation is best for bean
+5. Exit.
+
+Your selection:"""
+
+def menu():
+    connection = Database.connect()
+    Database.create_tables(connection)
+
+    while (user_input := input(MENU_PROMPT)) != "5":
+        if user_input == "1":
+            prompt_add_new_bean(connection)
+        elif user_input == "2":
+            prompt_see_all_beans(connection)
+        elif user_input == "3":
+            prompt_find_bean(connection)
+        elif user_input == "4":
+            prompt_find_best_method(connection)
+        else:
+            print("invalid input please input something else")
+
+def prompt_add_new_bean(connection):
+    name = input("enter bean name: ")
+    method = input("enter how you have prepared it: ")
+    rating = int(input("enter how you rate it 1-100: "))
+    Database.add_bean(connection, name, method, rating)
+
+def prompt_see_all_beans(connection):
+    beans = Database.get_all_beans(connection)
+
+    for bean in beans:
+        print(f"{bean[1]} ({bean[2]}) {bean[3]}/100")
+
+def prompt_find_bean(connection):
+    name = input("Enter bean name to find: ")
+    beans = Database.get_beans_by_name(connection, name)
+    for bean in beans:
+        print(f"{bean[1]} ({bean[2]}) - {bean[3]}/100")
+def prompt_find_best_method(connection):
+    name = input("Enter bean name to find: ")
+    best_method = Database.get_best_preperation_for_bean(connection, name)
+    print(f"The best preperation method for {name} is: {best_method[2]}")
+
+menu()
